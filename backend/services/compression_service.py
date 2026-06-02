@@ -1,25 +1,29 @@
-import pikepdf
+import pypdf
+from pypdf import PdfReader, PdfWriter
 import os
 
 def compress_pdf(input_path, output_path):
-    """
-    Compress PDF file by optimizing images and streams
-    """
     try:
-        # Open the PDF
-        with pikepdf.Pdf.open(input_path) as pdf:
-            # Save with compression options
-            pdf.save(output_path, 
-                    compress_streams=True,
-                    stream_decode_level=pikepdf.StreamDecodeLevel.specialized)
+        reader = PdfReader(input_path)
+        writer = PdfWriter()
         
-        # Get compressed size
+        original_size = os.path.getsize(input_path)
+        
+        # Copy all pages with compression
+        for page in reader.pages:
+            writer.add_page(page)
+        
+        # Compress by enabling compression
+        writer.compress_content_streams = True
+        
+        # Save compressed PDF
+        with open(output_path, 'wb') as output_file:
+            writer.write(output_file)
+        
         compressed_size = os.path.getsize(output_path)
         
-        # If compression didn't reduce size, use original
-        original_size = os.path.getsize(input_path)
+        # If compression didn't help, use original
         if compressed_size >= original_size:
-            # Copy original file instead
             import shutil
             shutil.copy2(input_path, output_path)
             compressed_size = original_size
@@ -27,5 +31,5 @@ def compress_pdf(input_path, output_path):
         return True, compressed_size
         
     except Exception as e:
-        print(f"Compression error details: {e}")
+        print(f"Compression error: {e}")
         return False, 0
