@@ -7,7 +7,10 @@ from pypdf import PdfReader, PdfWriter
 
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app, origins=['http://localhost:3000'])
+CORS(app, origins=[
+    'http://localhost:3000',                    # Local development
+    'https://pdf-frontend-dzvm.onrender.com'    # Your production frontend
+])
 
 # Ensure directories exist
 Config.ensure_directories()
