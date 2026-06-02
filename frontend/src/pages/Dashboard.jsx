@@ -50,14 +50,17 @@ function Dashboard() {
         setProgress((completed / files.length) * 100);
         continue;
       }
+
+      if (result.success) {
+  setDownloadUrl(`${https://pdf-security-suite-backend.onrender.com}${result.download_url}`);
+  showNotification(result.message, 'success');
+}
       
       const result = await api.uploadPDF(file);
-      if (result.success) {
-        uploaded.push({ 
-          file_id: result.file_id, 
-          filename: result.filename,
-          size: result.size || file.size 
-        });
+     if (result.success) {
+  setDownloadUrl(`${https://pdf-security-suite-backend.onrender.com}${result.download_url}`);
+  showNotification(result.message, 'success');
+}
         showNotification(`${file.name} uploaded successfully`, 'success');
       } else {
         showNotification(`${file.name}: ${result.error || 'Upload failed'}`, 'error');
@@ -108,7 +111,7 @@ function Dashboard() {
     const result = await api.protectPDF(uploadedFiles[0].file_id, password);
     
     if (result.success) {
-      setDownloadUrl(`http://localhost:5000${result.download_url}`);
+      setDownloadUrl(`https://pdf-security-suite-backend.onrender.com${result.download_url}`);
       showNotification(result.message, 'success');
     } else {
       showNotification(result.error, 'error');
