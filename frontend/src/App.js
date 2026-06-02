@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Use your actual Render backend URL
-const API_BASE_URL = 'https://pdf-security-suite-1.onrender.com/api';
+// Use environment variable for API URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://pdf-security-suite-1.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,6 +10,7 @@ const api = axios.create({
   },
 });
 
+// Rest of your API functions remain the same...
 export const uploadPDF = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
