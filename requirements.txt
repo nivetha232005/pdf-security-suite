@@ -1,6 +1,5 @@
 Flask==3.0.0
 Flask-CORS==4.0.0
-pikepdf==8.15.1
-python-magic==0.4.27
+pypdf==3.17.4
 Werkzeug==3.0.1
 python-dotenv==1.0.0
