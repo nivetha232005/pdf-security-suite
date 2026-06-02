@@ -71,3 +71,12 @@ export const rotatePDF = async (fileId, rotation) => {
     return { error: error.response?.data?.error || 'Rotation failed' };
   }
 };
+
+// Add this function to handle downloads
+export const downloadFile = (downloadUrl) => {
+  const fullUrl = downloadUrl.startsWith('http') 
+    ? downloadUrl 
+    : 'https://pdf-security-suite-backend.onrender.com' + downloadUrl;
+  
+  window.open(fullUrl, '_blank');
+};
