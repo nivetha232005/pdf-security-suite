@@ -1,89 +1,47 @@
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Error from './pages/Error';
 
-// Use environment variable for API URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://pdf-security-suite-1.onrender.com/api';
+function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }, [darkMode]);
 
-// Rest of your API functions remain the same...
-export const uploadPDF = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  try {
-    const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Upload error:', error);
-    return { error: error.response?.data?.error || 'Upload failed' };
-  }
-};
+  const toggleDarkMode = () => setDarkMode(!darkMode);
 
-export const protectPDF = async (fileId, password) => {
-  try {
-    const response = await api.post('/protect', { file_id: fileId, password });
-    return response.data;
-  } catch (error) {
-    console.error('Protect error:', error);
-    return { error: error.response?.data?.error || 'Protection failed' };
-  }
-};
+  return (
+    <Router>
+      <div className="app">
+        <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Error />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
+  );
+}
 
-export const removePassword = async (fileId, password) => {
-  try {
-    const response = await api.post('/remove-password', { file_id: fileId, password });
-    return response.data;
-  } catch (error) {
-    console.error('Remove password error:', error);
-    return { error: error.response?.data?.error || 'Failed to remove password' };
-  }
-};
-
-export const mergePDFs = async (fileIds) => {
-  try {
-    const response = await api.post('/merge', { file_ids: fileIds });
-    return response.data;
-  } catch (error) {
-    console.error('Merge error:', error);
-    return { error: error.response?.data?.error || 'Merge failed' };
-  }
-};
-
-export const splitPDF = async (fileId, pageRange) => {
-  try {
-    const response = await api.post('/split', { file_id: fileId, page_range: pageRange });
-    return response.data;
-  } catch (error) {
-    console.error('Split error:', error);
-    return { error: error.response?.data?.error || 'Split failed' };
-  }
-};
-
-export const compressPDF = async (fileId) => {
-  try {
-    const response = await api.post('/compress', { file_id: fileId });
-    return response.data;
-  } catch (error) {
-    console.error('Compress error:', error);
-    return { error: error.response?.data?.error || 'Compression failed' };
-  }
-};
-
-export const rotatePDF = async (fileId, rotation) => {
-  try {
-    const response = await api.post('/rotate', { file_id: fileId, rotation });
-    return response.data;
-  } catch (error) {
-    console.error('Rotate error:', error);
-    return { error: error.response?.data?.error || 'Rotation failed' };
-  }
-};
+export default App;
