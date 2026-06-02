@@ -1,34 +1,89 @@
-# Build stage
-FROM node:18-alpine as build
+import axios from 'axios';
 
-WORKDIR /app
+// Use environment variable or default to Render backend
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://pdf-security-suite-1.onrender.com/api';
 
-# Copy package files
-COPY package*.json ./
-RUN npm ci
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-# Copy source code
-COPY . .
+// Your API functions here (same as before)
+export const uploadPDF = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  try {
+    const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Upload error:', error);
+    return { error: error.response?.data?.error || 'Upload failed' };
+  }
+};
 
-# Build the app
-RUN npm run build
+export const protectPDF = async (fileId, password) => {
+  try {
+    const response = await api.post('/protect', { file_id: fileId, password });
+    return response.data;
+  } catch (error) {
+    console.error('Protect error:', error);
+    return { error: error.response?.data?.error || 'Protection failed' };
+  }
+};
 
-# Production stage
-FROM nginx:alpine
+export const removePassword = async (fileId, password) => {
+  try {
+    const response = await api.post('/remove-password', { file_id: fileId, password });
+    return response.data;
+  } catch (error) {
+    console.error('Remove password error:', error);
+    return { error: error.response?.data?.error || 'Failed to remove password' };
+  }
+};
 
-# Copy built files to nginx
-COPY --from=build /app/build /usr/share/nginx/html
+export const mergePDFs = async (fileIds) => {
+  try {
+    const response = await api.post('/merge', { file_ids: fileIds });
+    return response.data;
+  } catch (error) {
+    console.error('Merge error:', error);
+    return { error: error.response?.data?.error || 'Merge failed' };
+  }
+};
 
-# Copy nginx configuration
-RUN echo 'server { \
-    listen 3000; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html index.htm; \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+export const splitPDF = async (fileId, pageRange) => {
+  try {
+    const response = await api.post('/split', { file_id: fileId, page_range: pageRange });
+    return response.data;
+  } catch (error) {
+    console.error('Split error:', error);
+    return { error: error.response?.data?.error || 'Split failed' };
+  }
+};
 
-EXPOSE 3000
+export const compressPDF = async (fileId) => {
+  try {
+    const response = await api.post('/compress', { file_id: fileId });
+    return response.data;
+  } catch (error) {
+    console.error('Compress error:', error);
+    return { error: error.response?.data?.error || 'Compression failed' };
+  }
+};
 
-CMD ["nginx", "-g", "daemon off;"]
+export const rotatePDF = async (fileId, rotation) => {
+  try {
+    const response = await api.post('/rotate', { file_id: fileId, rotation });
+    return response.data;
+  } catch (error) {
+    console.error('Rotate error:', error);
+    return { error: error.response?.data?.error || 'Rotation failed' };
+  }
+};
