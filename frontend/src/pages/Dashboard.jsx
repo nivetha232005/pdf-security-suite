@@ -5,6 +5,8 @@ import ProgressBar from '../components/ProgressBar';
 import Notification from '../components/Notification';
 import * as api from '../services/api';
 
+const BACKEND_URL = 'https://pdf-security-suite-backend.onrender.com';
+
 function Dashboard() {
   const [searchParams] = useSearchParams();
   const tool = searchParams.get('tool') || 'protect';
