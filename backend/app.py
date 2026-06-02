@@ -4,13 +4,27 @@ from config import Config
 import os
 import uuid
 
-# Import services (these now use pypdf internally)
+# Create Flask app FIRST
+app = Flask(__name__)
+app.config.from_object(Config)
+CORS(app, origins=['http://localhost:3000'])
+
+# Ensure directories exist
+Config.ensure_directories()
+
+# Import services
 from utils.validators import validate_pdf, validate_password
 from utils.file_handler import save_uploaded_file, load_file, delete_file
 from services.encryption_service import encrypt_pdf, decrypt_pdf
 from services.pdf_service import merge_pdfs as merge_pdfs_service, split_pdf as split_pdf_service, rotate_pdf as rotate_pdf_service
 from services.compression_service import compress_pdf as compress_pdf_service
 
+# Health check endpoint
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy', 'message': 'PDF Security Suite is running'}), 200
+
+# Upload endpoint
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -35,6 +49,7 @@ def upload_file():
         'size': os.path.getsize(file_path)
     })
 
+# Protect PDF endpoint
 @app.route('/api/protect', methods=['POST'])
 def protect_pdf():
     data = request.json
@@ -67,6 +82,7 @@ def protect_pdf():
     else:
         return jsonify({'error': 'Failed to protect PDF'}), 500
 
+# Remove password endpoint
 @app.route('/api/remove-password', methods=['POST'])
 def remove_password():
     data = request.json
@@ -95,6 +111,7 @@ def remove_password():
     else:
         return jsonify({'error': 'Incorrect password or corrupted file'}), 401
 
+# Merge PDFs endpoint
 @app.route('/api/merge', methods=['POST'])
 def merge_pdf():
     data = request.json
@@ -117,6 +134,7 @@ def merge_pdf():
     else:
         return jsonify({'error': 'Failed to merge PDFs'}), 500
 
+# Split PDF endpoint
 @app.route('/api/split', methods=['POST'])
 def split_pdf():
     data = request.json
@@ -144,6 +162,7 @@ def split_pdf():
     else:
         return jsonify({'error': 'Failed to split PDF'}), 500
 
+# Compress PDF endpoint
 @app.route('/api/compress', methods=['POST'])
 def compress_pdf():
     data = request.json
@@ -176,6 +195,7 @@ def compress_pdf():
     else:
         return jsonify({'error': 'Failed to compress PDF'}), 500
 
+# Rotate PDF endpoint
 @app.route('/api/rotate', methods=['POST'])
 def rotate_pdf():
     data = request.json
@@ -204,6 +224,7 @@ def rotate_pdf():
     else:
         return jsonify({'error': 'Failed to rotate PDF'}), 500
 
+# Download endpoint
 @app.route('/api/download/<filename>')
 def download_file(filename):
     file_path = os.path.join('processed', filename)
@@ -211,6 +232,7 @@ def download_file(filename):
         return send_file(file_path, as_attachment=True)
     return jsonify({'error': 'File not found'}), 404
 
+# Main guard
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
