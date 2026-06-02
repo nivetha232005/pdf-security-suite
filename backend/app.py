@@ -17,7 +17,7 @@ app.config.from_object(Config)
 # Configure CORS for production
 CORS(app, origins=[
     'http://localhost:3000',
-    'https://*.vercel.app',
+    'https://pdf-security-suite-frontend.onrender.com',  # Your frontend Render URL
     'https://*.onrender.com'
 ])
 
