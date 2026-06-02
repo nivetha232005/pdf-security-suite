@@ -1,0 +1,20 @@
+body.dark-mode {
+  --bg-primary: #1F2937;
+  --bg-secondary: #111827;
+  --bg-tertiary: #374151;
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --border-color: #374151;
+}
+
+body.dark-mode .tool-card,
+body.dark-mode .upload-area,
+body.dark-mode .download-card {
+  background: var(--bg-tertiary);
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
