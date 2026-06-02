@@ -1,5 +1,3 @@
-import magic
-
 def validate_pdf(file):
     if file.filename == '':
         return False, "No file selected"
@@ -7,7 +5,6 @@ def validate_pdf(file):
     if not file.filename.lower().endswith('.pdf'):
         return False, "File must be a PDF"
     
-    # Check file size (max 50MB)
     file.seek(0, 2)
     size = file.tell()
     file.seek(0)
@@ -15,12 +12,12 @@ def validate_pdf(file):
     if size > 50 * 1024 * 1024:
         return False, "File size exceeds 50MB limit"
     
-    # Check MIME type
-    mime = magic.from_buffer(file.read(1024), mime=True)
+    # Check PDF header
+    header = file.read(4)
     file.seek(0)
     
-    if mime != 'application/pdf':
-        return False, "Invalid file type. Only PDF files are allowed"
+    if header != b'%PDF':
+        return False, "Invalid PDF file"
     
     return True, None
 
