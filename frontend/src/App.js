@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Use environment variable or fallback to Render URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://your-service-name.onrender.com/api';
+// Use your actual Render backend URL
+const API_BASE_URL = 'https://pdf-security-suite-1.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
