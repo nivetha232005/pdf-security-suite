@@ -25,6 +25,7 @@ function Dashboard() {
     setTimeout(() => setNotification(null), 5000);
   };
 
+  // FIXED: handleUpload function
   const handleUpload = async (files) => {
     setLoading(true);
     setProgress(0);
@@ -50,17 +51,14 @@ function Dashboard() {
         setProgress((completed / files.length) * 100);
         continue;
       }
-
-      if (result.success) {
-  setDownloadUrl(`${https://pdf-security-suite-backend.onrender.com}${result.download_url}`);
-  showNotification(result.message, 'success');
-}
       
       const result = await api.uploadPDF(file);
-     if (result.success) {
-  setDownloadUrl(`${https://pdf-security-suite-backend.onrender.com}${result.download_url}`);
-  showNotification(result.message, 'success');
-}
+      if (result.success) {
+        uploaded.push({ 
+          file_id: result.file_id, 
+          filename: result.filename,
+          size: result.size || file.size 
+        });
         showNotification(`${file.name} uploaded successfully`, 'success');
       } else {
         showNotification(`${file.name}: ${result.error || 'Upload failed'}`, 'error');
@@ -96,6 +94,7 @@ function Dashboard() {
     setUploadedFiles(newFiles);
   };
 
+  // FIXED: handleProtect
   const handleProtect = async () => {
     if (uploadedFiles.length === 0) {
       showNotification('Please upload a PDF first', 'error');
@@ -111,7 +110,9 @@ function Dashboard() {
     const result = await api.protectPDF(uploadedFiles[0].file_id, password);
     
     if (result.success) {
-      setDownloadUrl(`https://pdf-security-suite-backend.onrender.com${result.download_url}`);
+      const fullUrl = `${BACKEND_URL}${result.download_url}`;
+      setDownloadUrl(fullUrl);
+      window.open(fullUrl, '_blank');
       showNotification(result.message, 'success');
     } else {
       showNotification(result.error, 'error');
@@ -119,6 +120,7 @@ function Dashboard() {
     setLoading(false);
   };
 
+  // FIXED: handleRemovePassword
   const handleRemovePassword = async () => {
     if (uploadedFiles.length === 0) {
       showNotification('Please upload a PDF first', 'error');
@@ -134,7 +136,9 @@ function Dashboard() {
     const result = await api.removePassword(uploadedFiles[0].file_id, password);
     
     if (result.success) {
-      setDownloadUrl(`http://localhost:5000${result.download_url}`);
+      const fullUrl = `${BACKEND_URL}${result.download_url}`;
+      setDownloadUrl(fullUrl);
+      window.open(fullUrl, '_blank');
       showNotification(result.message, 'success');
     } else {
       showNotification(result.error, 'error');
@@ -142,6 +146,7 @@ function Dashboard() {
     setLoading(false);
   };
 
+  // FIXED: handleMerge
   const handleMerge = async () => {
     if (uploadedFiles.length < 2) {
       showNotification('Please upload at least 2 PDFs to merge', 'error');
@@ -153,7 +158,9 @@ function Dashboard() {
     const result = await api.mergePDFs(fileIds);
     
     if (result.success) {
-      setDownloadUrl(`http://localhost:5000${result.download_url}`);
+      const fullUrl = `${BACKEND_URL}${result.download_url}`;
+      setDownloadUrl(fullUrl);
+      window.open(fullUrl, '_blank');
       showNotification(result.message, 'success');
     } else {
       showNotification(result.error, 'error');
@@ -161,6 +168,7 @@ function Dashboard() {
     setLoading(false);
   };
 
+  // FIXED: handleSplit
   const handleSplit = async () => {
     if (uploadedFiles.length === 0) {
       showNotification('Please upload a PDF first', 'error');
@@ -176,7 +184,9 @@ function Dashboard() {
     const result = await api.splitPDF(uploadedFiles[0].file_id, pageRange);
     
     if (result.success) {
-      setDownloadUrl(`http://localhost:5000${result.download_url}`);
+      const fullUrl = `${BACKEND_URL}${result.download_url}`;
+      setDownloadUrl(fullUrl);
+      window.open(fullUrl, '_blank');
       showNotification(result.message, 'success');
     } else {
       showNotification(result.error, 'error');
@@ -184,6 +194,7 @@ function Dashboard() {
     setLoading(false);
   };
 
+  // FIXED: handleCompress
   const handleCompress = async () => {
     if (uploadedFiles.length === 0) {
       showNotification('Please upload a PDF first', 'error');
@@ -194,7 +205,9 @@ function Dashboard() {
     const result = await api.compressPDF(uploadedFiles[0].file_id);
     
     if (result.success) {
-      setDownloadUrl(`http://localhost:5000${result.download_url}`);
+      const fullUrl = `${BACKEND_URL}${result.download_url}`;
+      setDownloadUrl(fullUrl);
+      window.open(fullUrl, '_blank');
       showNotification(`${result.message}. Reduction: ${result.reduction}%`, 'success');
     } else {
       showNotification(result.error, 'error');
@@ -202,6 +215,7 @@ function Dashboard() {
     setLoading(false);
   };
 
+  // FIXED: handleRotate
   const handleRotate = async () => {
     if (uploadedFiles.length === 0) {
       showNotification('Please upload a PDF first', 'error');
@@ -212,7 +226,9 @@ function Dashboard() {
     const result = await api.rotatePDF(uploadedFiles[0].file_id, rotation);
     
     if (result.success) {
-      setDownloadUrl(`http://localhost:5000${result.download_url}`);
+      const fullUrl = `${BACKEND_URL}${result.download_url}`;
+      setDownloadUrl(fullUrl);
+      window.open(fullUrl, '_blank');
       showNotification(result.message, 'success');
     } else {
       showNotification(result.error, 'error');
