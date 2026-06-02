@@ -3,16 +3,8 @@ from flask_cors import CORS
 from config import Config
 import os
 import uuid
-import pikepdf
 
-app = Flask(__name__)
-app.config.from_object(Config)
-CORS(app, origins=['http://localhost:3000'])
-
-# Ensure directories exist
-Config.ensure_directories()
-
-# Import utilities with aliases to avoid name conflicts
+# Import services (these now use pypdf internally)
 from utils.validators import validate_pdf, validate_password
 from utils.file_handler import save_uploaded_file, load_file, delete_file
 from services.encryption_service import encrypt_pdf, decrypt_pdf
